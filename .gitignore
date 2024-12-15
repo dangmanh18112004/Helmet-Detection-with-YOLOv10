@@ -1,0 +1,4 @@
+# ignore all .pdf files
+*.pdf
+
+safety_helmet_dataset/
