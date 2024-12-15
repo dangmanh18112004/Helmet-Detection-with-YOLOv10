@@ -2,4 +2,4 @@
 *.pdf
 
 safety_helmet_dataset/
-.gitignore
+*.gitignore
