@@ -2,33 +2,39 @@ from ultralytics import YOLO
 from argparse import ArgumentParser
 import streamlit as st
 import numpy as np
-import cv2
-
+from PIL import Image
+from utils.centralize import centered_title, centered_subheader
 
 def get_args():
-	parser = ArgumentParser(
-		description="Helmet Detection with YOLOv10")
-	parser.add_argument('--image-path', '-ip', type=str, default=None)
-	parser.add_argument('--model-path', '-mp', type=str, default='./pretrained_models/best.pt')
-	args = parser.parse_args()
-	return args
+    parser = ArgumentParser(description="Helmet Detection with YOLOv10")
+    parser.add_argument(
+        "--title", "-t", type=str, default="Helmet Detection with YOLOv10"
+    )
+    parser.add_argument(
+        "--model-path", "-mp", type=str, default="./pretrained_models/best.pt"
+    )
+    args = parser.parse_args()
+    return args
 
 
-if __name__ == '__main__':
-	st.title("Helmet Detection with YOLOv10")
-	print(np.__version__)
-	args = get_args()
-	model = YOLO(args.model_path)
-	if args.image_path is None:
-		print("Please give the image path")
-		exit(0)
-	else:
-		img = cv2.imread(args.image_path)
-		img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-		output = model(img)
-		for result in output:
-			im = result.plot()
-			im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-			cv2.imshow('result', im)
-			cv2.waitKey(0)
-	
+if __name__ == "__main__":
+    args = get_args()
+    st.set_page_config(layout="wide")
+    centered_title(args.title)
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+    if uploaded_file is not None:
+        img = Image.open(uploaded_file)
+        col1, col2 = st.columns(spec=2, gap="small")
+        with col1:
+            centered_subheader("Original Image")
+            st.image(img, caption="Uploaded Image")
+
+        if st.button("Detect"):
+            model = YOLO(args.model_path)
+            output = model(img)
+            for result in output:
+                im = result.plot()
+                im = im[:,:, ::-1] # Convert RGB2BGR
+            with col2:
+                centered_subheader("Detected Image")
+                st.image(im, caption="Detected Image")
