@@ -34,7 +34,7 @@ if __name__ == "__main__":
             output = model(img)
             for result in output:
                 im = result.plot()
-                im = im[:,:, ::-1] # Convert RGB2BGR
+                im = im[:,:, ::-1] # Convert BGR2RGB
             with col2:
                 centered_subheader("Detected Image")
                 st.image(im, caption="Detected Image")
